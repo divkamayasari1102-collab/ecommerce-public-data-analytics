@@ -6,8 +6,6 @@ Proyek ini merupakan portofolio analisis data ujung ke ujung (*end-to-end*) meng
 
 ## ✨ Struktur Direktori Proyek GitHub
 
-## ✨ Struktur Direktori Proyek GitHub
-
 ```text
 submission/
 ├── dashboard/
