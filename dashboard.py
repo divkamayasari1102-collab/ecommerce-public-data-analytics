@@ -13,7 +13,7 @@ st.set_page_config(
 # Mengatur tema visual seaborn agar rapi dan seragam
 sns.set_theme(style="darkgrid")
 
-# ID Google Drive yang diambil dari tautan baru Anda
+# ID Google Drive yang diambil dari tautan berkas Anda
 GOOGLE_DRIVE_FILE_ID = "1evo6EmgRhY90xH5aTY50pvB9vZbf-955"
 
 # Fungsi memuat data langsung dari Google Drive dengan caching Streamlit
@@ -40,7 +40,6 @@ except Exception as e:
 
 # ==================== KOMPONEN SIDEBAR (FILTER) ====================
 with st.sidebar:
-    st.image("https://githubusercontent.com", width=180) # Sesuaikan tautan jika ada logo Anda sendiri
     st.title("🔧 Panel Kontrol Filter")
     
     min_date = main_df["order_purchase_timestamp"].min().date()
