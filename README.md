@@ -6,6 +6,8 @@ Proyek ini merupakan portofolio analisis data ujung ke ujung (*end-to-end*) meng
 
 ## ✨ Struktur Direktori Proyek GitHub
 
+## ✨ Struktur Direktori Proyek GitHub
+
 ```text
 submission/
 ├── dashboard/
@@ -14,7 +16,8 @@ submission/
 │   └── E-Commerce Public Dataset.zip
 ├── notebook.ipynb
 ├── README.md
-└── requirements.txt
+├── requirements.txt
+└── url.txt
 ```
 
 ## 🛠️ Langkah Menjalankan Aplikasi di Komputer Lokal
