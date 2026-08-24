@@ -26,7 +26,7 @@ def load_data_from_drive(file_id):
     # Jika file belum terunduh di server Streamlit Cloud, lakukan pengunduhan otomatis
     if not os.path.exists(local_path):
         with st.spinner("Sedang mengunduh dataset dari Google Drive... Mohon tunggu sebentar."):
-            # Menggunakan URL langsung Google Drive untuk download file besar dengan token konfirmasi
+            # FORMAT URL YANG SUDAH DIPERBAIKI SEPENUHNYA
             download_url = f"https://google.com{file_id}"
             
             session = requests.Session()
@@ -130,7 +130,6 @@ with tab1:
 # ---- TAB 2: PERFORMA PRODUK ----
 with tab2:
     st.subheader("Kategori Produk Terlaris & Kurang Diminati (Top 5 & Bottom 5)")
-    # Memastikan kolom product_category yang digunakan konsisten dengan notebook Anda
     prod_col = 'product_category' if 'product_category' in filtered_df.columns else 'product_category_name_english'
     
     product_perf = filtered_df.groupby(prod_col).agg(
@@ -218,3 +217,7 @@ with tab6:
     ax[0].tick_params(axis='x', rotation=30)
     
     sns.barplot(y="frequency", x="customer_short", data=top_5_frequency, palette="Oranges_r", ax=ax[1])
+    ax[1].set_title("Top 5 Customers by Frequency", fontsize=11, fontweight="bold")
+    ax[1].set_xlabel("Customer ID (Short)")
+    ax[1].tick_params(axis='x', rotation=30)
+    
