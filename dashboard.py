@@ -2,8 +2,6 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-import requests
-import os
 
 # Konfigurasi dasar halaman aplikasi dasbor
 st.set_page_config(
@@ -15,43 +13,19 @@ st.set_page_config(
 # Mengatur tema visual seaborn agar rapi dan seragam
 sns.set_theme(style="darkgrid")
 
-# ID Google Drive yang sudah disesuaikan dengan berkas Anda
+# ID Google Drive yang diambil dari tautan baru Anda
 GOOGLE_DRIVE_FILE_ID = "1evo6EmgRhY90xH5aTY50pvB9vZbf-955"
 
-# Fungsi memuat data cerdas dengan fitur streaming dari Google Drive jika lokal kosong
+# Fungsi memuat data langsung dari Google Drive dengan caching Streamlit
 @st.cache_data
 def load_data_from_drive(file_id):
-    local_path = "main_data_cached.csv"
+    # Format URL resmi Google Drive untuk ekspor download langsung ke Pandas
+    download_url = f"https://google.com{file_id}"
     
-    # Jika file belum terunduh di server Streamlit Cloud, lakukan pengunduhan otomatis
-    if not os.path.exists(local_path):
-        with st.spinner("Sedang mengunduh dataset dari Google Drive... Mohon tunggu sebentar."):
-            session = requests.Session()
-            
-            # --- REVISI DI SINI: Memperbaiki format URL dasar Google Drive ---
-            download_url = f"https://google.com{file_id}"
-            
-            response = session.get(download_url, stream=True)
-            
-            token = None
-            for key, value in response.cookies.items():
-                if "download_warning" in key:
-                    token = value
-                    break
-            
-            if token:
-                # --- REVISI DI SINI: Memperbaiki format URL konfirmasi file besar ---
-                download_url = f"https://google.com{token}&id={file_id}"
-                response = session.get(download_url, stream=True)
-                
-            # Menyimpan potongan data yang dialirkan ke dalam penyimpanan server lokal
-            with open(local_path, "wb") as f:
-                for chunk in response.iter_content(chunk_size=32768):
-                    if chunk:
-                        f.write(chunk)
-                        
-    # Membaca berkas menggunakan Pandas dari penyimpanan lokal server
-    df = pd.read_csv(local_path)
+    with st.spinner("Sedang mengunduh dataset dari Google Drive... Mohon tunggu sebentar."):
+        # Pandas langsung membaca file CSV secara live dari URL ekspor resmi
+        df = pd.read_csv(download_url)
+        
     df['order_purchase_timestamp'] = pd.to_datetime(df['order_purchase_timestamp'])
     df['order_month'] = df['order_purchase_timestamp'].dt.to_period('M')
     return df
@@ -66,7 +40,7 @@ except Exception as e:
 
 # ==================== KOMPONEN SIDEBAR (FILTER) ====================
 with st.sidebar:
-    st.image("https://githubusercontent.com", width=180) # Sesuaikan jika ada URL gambar utuh Anda
+    st.image("https://githubusercontent.com", width=180) # Sesuaikan tautan jika ada logo Anda sendiri
     st.title("🔧 Panel Kontrol Filter")
     
     min_date = main_df["order_purchase_timestamp"].min().date()
@@ -120,13 +94,13 @@ with tab1:
     
     fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(18, 5))
     
-    sns.lineplot(x="order_month_str", y="order_id", data=monthly_data, marker="o", color="#2A5B8F", linewidth=3, ax=ax[0])
-    ax[0].set_title("Tren Volume Penjualan (Orders)", fontsize=12, fontweight="bold")
-    ax[0].tick_params(axis='x', rotation=45)
+    sns.lineplot(x="order_month_str", y="order_id", data=monthly_data, marker="o", color="#2A5B8F", linewidth=3, ax=ax)
+    ax.set_title("Tren Volume Penjualan (Orders)", fontsize=12, fontweight="bold")
+    ax.tick_params(axis='x', rotation=45)
     
-    sns.lineplot(x="order_month_str", y="price", data=monthly_data, marker="o", color="#E76F51", linewidth=3, ax=ax[1])
-    ax[1].set_title("Tren Akumulasi Pendapatan (Revenue)", fontsize=12, fontweight="bold")
-    ax[1].tick_params(axis='x', rotation=45)
+    sns.lineplot(x="order_month_str", y="price", data=monthly_data, marker="o", color="#E76F51", linewidth=3, ax=ax)
+    ax.set_title("Tren Akumulasi Pendapatan (Revenue)", fontsize=12, fontweight="bold")
+    ax.tick_params(axis='x', rotation=45)
     st.pyplot(fig)
 
 # ---- TAB 2: PERFORMA PRODUK ----
@@ -143,11 +117,11 @@ with tab2:
     
     fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(18, 5))
     
-    sns.barplot(x="order_item_id", y=prod_col, data=top_5, palette="viridis", ax=ax[0])
-    ax[0].set_title("Top 5 Kategori Produk Tertinggi", fontsize=12, fontweight="bold")
+    sns.barplot(x="order_item_id", y=prod_col, data=top_5, palette="viridis", ax=ax)
+    ax.set_title("Top 5 Kategori Produk Tertinggi", fontsize=12, fontweight="bold")
     
-    sns.barplot(x="order_item_id", y=prod_col, data=bottom_5, palette="rocket", ax=ax[1])
-    ax[1].set_title("Bottom 5 Kategori Produk Terendah", fontsize=12, fontweight="bold")
+    sns.barplot(x="order_item_id", y=prod_col, data=bottom_5, palette="rocket", ax=ax)
+    ax.set_title("Bottom 5 Kategori Produk Terendah", fontsize=12, fontweight="bold")
     st.pyplot(fig)
 
 # ---- TAB 3: SKOR ULASAN ----
@@ -219,13 +193,19 @@ with tab6:
     
     fig, ax = plt.subplots(nrows=1, ncols=3, figsize=(20, 5))
     
-    sns.barplot(y="recency", x="customer_short", data=top_5_recency, palette="BuGn_r", ax=ax[0])
-    ax[0].set_title("Top 5 Customers by Recency (Days)", fontsize=11, fontweight="bold")
-    ax[0].set_xlabel("Customer ID (Short)")
-    ax[0].tick_params(axis='x', rotation=30)
+    sns.barplot(y="recency", x="customer_short", data=top_5_recency, palette="BuGn_r", ax=ax)
+    ax.set_title("Top 5 Customers by Recency (Days)", fontsize=11, fontweight="bold")
+    ax.set_xlabel("Customer ID (Short)")
+    ax.tick_params(axis='x', rotation=30)
     
-    sns.barplot(y="frequency", x="customer_short", data=top_5_frequency, palette="Oranges_r", ax=ax[1])
-    ax[1].set_title("Top 5 Customers by Frequency", fontsize=11, fontweight="bold")
-    ax[1].set_xlabel("Customer ID (Short)")
-    ax[1].tick_params(axis='x', rotation=30)
+    sns.barplot(y="frequency", x="customer_short", data=top_5_frequency, palette="Oranges_r", ax=ax)
+    ax.set_title("Top 5 Customers by Frequency", fontsize=11, fontweight="bold")
+    ax.set_xlabel("Customer ID (Short)")
+    ax.tick_params(axis='x', rotation=30)
     
+    sns.barplot(y="monetary", x="customer_short", data=top_5_monetary, palette="Blues_r", ax=ax)
+    ax.set_title("Top 5 Customers by Monetary", fontsize=11, fontweight="bold")
+    ax.set_xlabel("Customer ID (Short)")
+    ax.tick_params(axis='x', rotation=30)
+    
+    st.pyplot(fig)
