@@ -24,7 +24,7 @@ def load_data_from_drive(file_id):
     local_path = "main_data_cached.csv"
     
     # Jika file belum terunduh di server Streamlit Cloud, lakukan pengunduhan otomatis
-    if not os.path.path.exists(local_path):
+    if not os.path.exists(local_path):
         with st.spinner("Sedang mengunduh dataset dari Google Drive... Mohon tunggu sebentar."):
             session = requests.Session()
             
