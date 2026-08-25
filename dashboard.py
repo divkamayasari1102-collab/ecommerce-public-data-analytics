@@ -56,7 +56,7 @@ with st.sidebar:
     start_date, end_date = st.date_input(
         label='Pilih Rentang Waktu Transaksi:',
         min_value=min_date,
-        max_value=max_date,
+        max_date=max_date,
         value=[min_date, max_date]
     )
 
@@ -228,6 +228,7 @@ with tab6:
     
     fig, ax = plt.subplots(nrows=1, ncols=3, figsize=(20, 5))
     
+    # 1. Grafik Recency
     sns.barplot(y="recency", x="customer_short", data=top_5_recency, palette="BuGn_r", ax=ax[0])
     ax[0].set_title("Top 5 Customers by Recency (Days)", fontsize=11, fontweight="bold")
     ax[0].set_xlabel("Customer ID (Short)")
