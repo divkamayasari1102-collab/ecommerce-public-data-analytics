@@ -16,34 +16,31 @@ st.set_page_config(
 sns.set_theme(style="darkgrid")
 
 # ==============================================================================
-# 2. MEMBACA DATA LANGSUNG DARI FILE ZIP DI GITHUB
+# 2. MEMBUKA & MENGGABUNGKAN 4 FILE DATA CSV DARI GITHUB
 # ==============================================================================
-# TEMPELKAN BARIS KODE REVISI BARU INI:
-import urllib.request
-import zipfile
-import io
-
 @st.cache_data
-def load_data_from_zip():
-    zip_url = "https://github.com"
+def load_split_data():
+    base_url = "https://githubusercontent.com"
     
-    req = urllib.request.Request(zip_url, headers={'User-Agent': 'Mozilla/5.0'})
-    with urllib.request.urlopen(req) as response:
-        zip_file_bytes = io.BytesIO(response.read())
-        with zipfile.ZipFile(zip_file_bytes) as z:
-            csv_filename = [f for f in z.namelist() if f.endswith('.csv')][0]
-            with z.open(csv_filename) as f:
-                df = pd.read_csv(f)
-                
+    # Membaca keempat bagian file csv teks mentah langsung dari GitHub
+    df1 = pd.read_csv(f"{base_url}main_data_part1.csv")
+    df2 = pd.read_csv(f"{base_url}main_data_part2.csv")
+    df3 = pd.read_csv(f"{base_url}main_data_part3.csv")
+    df4 = pd.read_csv(f"{base_url}main_data_part4.csv")
+    
+    # Menggabungkan kembali keempat bagian menjadi satu DataFrame utuh
+    df = pd.concat([df1, df2, df3, df4], ignore_index=True)
+    
+    # Preprocessing Tanggal bawaan kode Anda
     df['order_purchase_timestamp'] = pd.to_datetime(df['order_purchase_timestamp'])
     df['order_month'] = df['order_purchase_timestamp'].dt.to_period('M')
     return df
 
 try:
     with st.spinner("Sedang memuat data dari GitHub... Mohon tunggu sebentar."):
-        main_df = load_data_from_zip()
+        main_df = load_split_data()
 except Exception as e:
-    st.error(f"Gagal membaca file ZIP dari GitHub: {e}")
+    st.error(f"Gagal membaca data dari GitHub: {e}")
     st.stop()
 
 # ==============================================================================
@@ -109,13 +106,13 @@ with tab1:
     
     fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(18, 5))
     
-    sns.lineplot(x="order_month_str", y="order_id", data=monthly_data, marker="o", color="#2A9D8F", linewidth=3, ax=ax)
-    ax.set_title("Tren Volume Penjualan (Orders)", fontsize=12, fontweight="bold")
-    ax.tick_params(axis='x', rotation=45)
+    sns.lineplot(x="order_month_str", y="order_id", data=monthly_data, marker="o", color="#2A9D8F", linewidth=3, ax=ax[0])
+    ax[0].set_title("Tren Volume Penjualan (Orders)", fontsize=12, fontweight="bold")
+    ax[0].tick_params(axis='x', rotation=45)
     
-    sns.lineplot(x="order_month_str", y="price", data=monthly_data, marker="o", color="#E76F51", linewidth=3, ax=ax)
-    ax.set_title("Tren Akumulasi Pendapatan (Revenue)", fontsize=12, fontweight="bold")
-    ax.tick_params(axis='x', rotation=45)
+    sns.lineplot(x="order_month_str", y="price", data=monthly_data, marker="o", color="#E76F51", linewidth=3, ax=ax[1])
+    ax[1].set_title("Tren Akumulasi Pendapatan (Revenue)", fontsize=12, fontweight="bold")
+    ax[1].tick_params(axis='x', rotation=45)
     
     st.pyplot(fig)
 
@@ -136,11 +133,11 @@ with tab2:
     
     fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(18, 5))
     
-    sns.barplot(x='order_item_id', y=prod_col, data=top_5, palette='viridis', ax=ax)
-    ax.set_title("Top 5 Kategori Produk Tertinggi", fontsize=12, fontweight="bold")
+    sns.barplot(x='order_item_id', y=prod_col, data=top_5, palette='viridis', ax=ax[0])
+    ax[0].set_title("Top 5 Kategori Produk Tertinggi", fontsize=12, fontweight="bold")
     
-    sns.barplot(x='order_item_id', y=prod_col, data=bottom_5, palette='rocket', ax=ax)
-    ax.set_title("Bottom 5 Kategori Produk Terendah", fontsize=12, fontweight="bold")
+    sns.barplot(x='order_item_id', y=prod_col, data=bottom_5, palette='rocket', ax=ax[1])
+    ax[1].set_title("Bottom 5 Kategori Produk Terendah", fontsize=12, fontweight="bold")
     
     st.pyplot(fig)
 
@@ -231,10 +228,4 @@ with tab6:
     fig, ax = plt.subplots(nrows=1, ncols=3, figsize=(20, 5))
     
     # 1. Grafik Recency
-    sns.barplot(y="recency", x="customer_short", data=top_5_recency, palette="BuGn_r", ax=ax)
-    ax.set_title("Top 5 Customers by Recency (Days)", fontsize=11, fontweight="bold")
-    ax.set_xlabel("Customer ID (Short)")
-    ax.tick_params(axis='x', rotation=30)
-    
-    # 2. Grafik Frequency
-    sns.barplot(y="frequency", x="customer_short", data=top_5_frequency, palette="Oranges_r", ax=ax)
+    sns.barplot(y="recency", x="customer_short", data=top_5_recency, palette="BuGn_r", ax=ax[0])
