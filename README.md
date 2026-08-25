@@ -1,51 +1,41 @@
-# 📊 E-Commerce Public Dataset Analysis Project
+# E-Commerce Public Data Analytics Dashboard 📊
 
-Proyek ini merupakan portofolio analisis data ujung ke ujung (*end-to-end*) menggunakan **E-Commerce Public Dataset**. Analisis difokuskan pada pengecekan kualitas data, eksplorasi data terarah, visualisasi pemecahan 5 masalah bisnis utama, serta pembuatan aplikasi dasbor interaktif berbasis web menggunakan Streamlit.
+Dasbor interaktif ini dibangun menggunakan **Streamlit** untuk menganalisis data publik transaksi e-commerce. Proyek ini mencakup visualisasi tren penjualan bulanan, performa kategori produk, analisis skor ulasan kepuasan, efisiensi logistik pengiriman, instrumen pembayaran, hingga segmentasi profil pelanggan menggunakan metode RFM (*Recency, Frequency, Monetary*).
 
-> 💡 **Informasi Manajemen Data Besar:** Karena ukuran dataset gabungan akhir melampaui ambang batas maksimum unggahan berkas tunggal di repositori GitHub, proyek ini dirancang secara modern agar dasbor Streamlit mengalirkan data (*streaming data*) secara langsung dan dinamis dari penyimpanan awan Google Drive publik menggunakan ID file yang aman saat pertama kali diakses.
+## 🚀 Fitur Utama Dashboard
+- **Tren Penjualan Bulanan:** Memantau dinamika total volume pesanan dan perolehan omzet pendapatan bisnis.
+- **Performa Produk:** Identifikasi kategori produk yang paling diminati (Top 5) dan kurang diminati (Bottom 5).
+- **Analisis Kepuasan:** Sebaran skor ulasan bintang dari konsumen pasca-transaksi selesai.
+- **Efisiensi Logistik:** Memantau tren durasi rata-rata kecepatan pengiriman barang dalam satuan hari.
+- **Segmentasi RFM:** Mengelompokkan dan mengidentifikasi profil karakteristik pelanggan terbaik berdasarkan aktivitas belanja.
 
-## ✨ Struktur Direktori Proyek GitHub
+## 📦 Struktur Penyimpanan Data
+Untuk mengatasi batas kapasitas maksimal unggahan file teks biasa di GitHub (maksimal 25 MB per file), berkas dataset utama berukuran ~60 MB dipisah secara lokal ke dalam 4 bagian file teks CSV sebelum digabungkan kembali dalam memori server via skrip kode Python:
+- `main_data_part1.csv`
+- `main_data_part2.csv`
+- `main_data_part3.csv`
+- `main_data_part4.csv`
 
-```text
-submission/
-├── dashboard/
-│   └── dashboard.py
-├── data/
-│   └── E-Commerce Public Dataset.zip
-├── notebook.ipynb
-├── README.md
-├── requirements.txt
-└── url.txt
+## 🛠️ Cara Menjalankan Proyek di Komputer Lokal
+
+### 1. Kloning Repositori
+```bash
+git clone https://github.com
+cd ecommerce-public-data-analytics
 ```
 
-## 🛠️ Langkah Menjalankan Aplikasi di Komputer Lokal
-
-### 1. Membuat Lingkungan Kerja Virtual (Virtual Environment)
-Jalankan perintah ini pada terminal atau command prompt komputer Anda:
-
+### 2. Instalasi Library Dependensi
+Pastikan Anda menginstal pustaka utama yang dibutuhkan sesuai dengan berkas `requirements.txt`:
 ```bash
-# Pengguna Windows
-python -m venv venv
-venv\Scripts\activate
-
-# Pengguna macOS / Linux
-python3 -m venv venv
-source venv/bin/activate
-```
-
-### 2. Memasang Seluruh Pustaka Dependensi (Libraries)
-Pasang semua dependensi utama yang tercantum di dalam file requirements.txt:
-
-```bash
-pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-### 3. Menjalankan Aplikasi Web Dashboard Streamlit
-Pastikan komputer Anda terhubung dengan internet agar modul aplikasi dapat mengunduh data dari awan secara otomatis pada pemanggilan pertama, kemudian eksekusi perintah berikut:
-
+### 3. Jalankan Aplikasi Streamlit
 ```bash
-streamlit run dashboard/dashboard.py
+streamlit run dashboard.py
 ```
 
-Setelah perintah dijalankan, peramban (*browser*) Anda akan terbuka secara otomatis mengarah ke alamat lokal default aplikasi: http://localhost:8501
+## 🧰 Teknologi Utama yang Digunakan
+- **Streamlit** - Pembuatan antarmuka web dasbor interaktif secara instan.
+- **Pandas** - Manipulasi tabel, pembersihan data, dan penggabungan dataset via `pd.concat`.
+- **Matplotlib & Seaborn** - Pembuatan grafik visualisasi data yang estetis.
