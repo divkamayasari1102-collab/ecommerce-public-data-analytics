@@ -18,14 +18,13 @@ sns.set_theme(style="darkgrid")
 # ==============================================================================
 # 2. MEMBACA DATA LANGSUNG DARI FILE ZIP DI GITHUB
 # ==============================================================================
-# TEMPELKAN BLOK KODE REVISI BARU INI:
+# TEMPELKAN BARIS KODE REVISI BARU INI:
 import urllib.request
 import zipfile
 import io
 
 @st.cache_data
 def load_data_from_zip():
-    # GANTI LINK DI BAWAH INI dengan link Raw Download ZIP dari GitHub
     zip_url = "https://github.com"
     
     req = urllib.request.Request(zip_url, headers={'User-Agent': 'Mozilla/5.0'})
