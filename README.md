@@ -25,7 +25,7 @@ cd ecommerce-public-data-analytics
 ```
 
 ### 2. Instalasi Library Dependensi
-Pastikan Anda menginstal pustaka utama yang dibutuhkan sesuai dengan berkas `requirements.txt`:
+Pastikan menginstal pustaka utama yang dibutuhkan sesuai dengan berkas `requirements.txt`:
 ```bash
 pip install -r requirements.txt
 ```
