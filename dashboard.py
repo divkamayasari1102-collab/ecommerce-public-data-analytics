@@ -18,15 +18,24 @@ sns.set_theme(style="darkgrid")
 # ==============================================================================
 # 2. MEMBACA DATA LANGSUNG DARI FILE ZIP DI GITHUB
 # ==============================================================================
+# TEMPELKAN BLOK KODE REVISI BARU INI:
+import urllib.request
+import zipfile
+import io
+
 @st.cache_data
 def load_data_from_zip():
-    # GANTI LINK DI BAWAH INI dengan Link Raw/Download ZIP dari GitHub Anda sendiri
+    # GANTI LINK DI BAWAH INI dengan link Raw Download ZIP dari GitHub
     zip_url = "https://github.com"
     
-    # Pandas mendeteksi kompresi ZIP otomatis dan mencari file CSV di dalamnya
-    df = pd.read_csv(zip_url, compression='zip')
-    
-    # Preprocessing Tanggal
+    req = urllib.request.Request(zip_url, headers={'User-Agent': 'Mozilla/5.0'})
+    with urllib.request.urlopen(req) as response:
+        zip_file_bytes = io.BytesIO(response.read())
+        with zipfile.ZipFile(zip_file_bytes) as z:
+            csv_filename = [f for f in z.namelist() if f.endswith('.csv')][0]
+            with z.open(csv_filename) as f:
+                df = pd.read_csv(f)
+                
     df['order_purchase_timestamp'] = pd.to_datetime(df['order_purchase_timestamp'])
     df['order_month'] = df['order_purchase_timestamp'].dt.to_period('M')
     return df
