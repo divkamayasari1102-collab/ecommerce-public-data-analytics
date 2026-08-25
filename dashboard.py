@@ -117,7 +117,7 @@ with tab1:
     st.pyplot(fig)
 
 # ------------------------------------------------------------------------------
-# TAB 2: PERFORMA PRODUK
+# TAB 2: PERFORMA PRODUK - REVISI UKURAN TEKS
 # ------------------------------------------------------------------------------
 with tab2:
     st.subheader("Kategori Produk Terlaris & Kurang Diminati (Top 5 & Bottom 5)")
@@ -131,14 +131,23 @@ with tab2:
     top_5 = product_perf.sort_values(by='order_item_id', ascending=False).head(5)
     bottom_5 = product_perf.sort_values(by='order_item_id', ascending=True).head(5)
     
-    fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(18, 5))
+    fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(18, 6))
     
+    # Top 5 Kategori Terlaris (Grafik Kiri)
     sns.barplot(x='order_item_id', y=prod_col, data=top_5, palette='viridis', ax=ax[0])
     ax[0].set_title("Top 5 Kategori Produk Tertinggi", fontsize=12, fontweight="bold")
+    ax[0].set_xlabel("Total Terjual")
+    ax[0].set_ylabel("Kategori Produk")
+    ax[0].tick_params(axis='y', labelsize=9) # Memperkecil huruf label kategori produk kiri
     
+    # Bottom 5 Kategori Kurang Diminati (Grafik Kanan)
     sns.barplot(x='order_item_id', y=prod_col, data=bottom_5, palette='rocket', ax=ax[1])
     ax[1].set_title("Bottom 5 Kategori Produk Terendah", fontsize=12, fontweight="bold")
+    ax[1].set_xlabel("Total Terjual")
+    ax[1].set_ylabel("")
+    ax[1].tick_params(axis='y', labelsize=9) # Memperkecil huruf label kategori produk kanan
     
+    plt.tight_layout() # Mengatur otomatis agar teks tidak saling tabrakan
     st.pyplot(fig)
 
 # ------------------------------------------------------------------------------
