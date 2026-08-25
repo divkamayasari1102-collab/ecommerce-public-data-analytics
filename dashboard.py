@@ -16,11 +16,10 @@ st.set_page_config(
 sns.set_theme(style="darkgrid")
 
 # ==============================================================================
-# 2. MEMBUKA & MENGGABUNGKAN 4 FILE DATA CSV DARI GITHUB
+# 2. MEMBUKA & MENGGABUNGKAN 4 FILE DATA CSV DARI REPOSITORI LOKAL
 # ==============================================================================
 @st.cache_data
 def load_split_data():
-    # MEMBACA LANGSUNG DARI REPOSITORI LOKAL TANPA LINK INTERNET
     df1 = pd.read_csv("main_data_part1.csv")
     df2 = pd.read_csv("main_data_part2.csv")
     df3 = pd.read_csv("main_data_part3.csv")
@@ -28,8 +27,13 @@ def load_split_data():
     
     df = pd.concat([df1, df2, df3, df4], ignore_index=True)
     
+    # Preprocessing Tanggal dan Pembuatan Kolom Durasi Logistik Otomatis
     df['order_purchase_timestamp'] = pd.to_datetime(df['order_purchase_timestamp'])
+    df['order_delivered_customer_date'] = pd.to_datetime(df['order_delivered_customer_date'])
     df['order_month'] = df['order_purchase_timestamp'].dt.to_period('M')
+    
+    # Menghitung selisih hari pengiriman secara langsung untuk Tab Durasi Logistik
+    df['delivery_days'] = (df['order_delivered_customer_date'] - df['order_purchase_timestamp']).dt.days
     return df
 
 try:
@@ -61,7 +65,7 @@ filtered_df = main_df[
 ]
 
 # ==============================================================================
-# 4. KONTEN HALAMAN UTAMA
+# 4. KONTEN HALAMAN UTAMA (METRIK UTAMA / KPI)
 # ==============================================================================
 st.title("✨ E-Commerce Public Data Analysis Dashboard")
 st.markdown("Aplikasi dasbor interaktif untuk memantau performa penjualan, kepuasan, pengiriman, dan segmentasi pelanggan.")
@@ -161,8 +165,11 @@ with tab3:
 with tab4:
     st.subheader("Rata-rata Waktu Pengiriman Barang Bulanan (Hari)")
     
-    if 'delivery_days' in filtered_df.columns:
-        delivery_data = filtered_df.groupby('order_month').agg({
+    # Membersihkan baris data kosong pada tanggal pengiriman
+    valid_delivery_df = filtered_df.dropna(subset=['delivery_days'])
+    
+    if not valid_delivery_df.empty:
+        delivery_data = valid_delivery_df.groupby('order_month').agg({
             'delivery_days': 'mean'
         }).reset_index()
         delivery_data['order_month_str'] = delivery_data['order_month'].astype(str)
@@ -170,7 +177,7 @@ with tab4:
         fig, ax = plt.subplots(figsize=(12, 4))
         sns.lineplot(x="order_month_str", y="delivery_days", data=delivery_data, marker="o", color="#457B9D", linewidth=3, ax=ax)
         
-        overall_mean = filtered_df['delivery_days'].mean()
+        overall_mean = valid_delivery_df['delivery_days'].mean()
         ax.axhline(overall_mean, color="#E63946", linestyle="--", label=f"Rata-rata Keseluruhan: {overall_mean:.1f} Hari")
         
         ax.set_title("Tren Kecepatan Distribusi Logistik", fontsize=12, fontweight="bold")
@@ -178,7 +185,7 @@ with tab4:
         ax.legend()
         st.pyplot(fig)
     else:
-        st.info("Informasi analisis durasi pengiriman membutuhkan kolom 'delivery_days' dalam dataset Anda.")
+        st.info("Tidak ada data pengiriman selesai yang valid untuk rentang tanggal ini.")
 
 # ------------------------------------------------------------------------------
 # TAB 5: PILIHAN PEMBAYARAN
@@ -221,7 +228,3 @@ with tab6:
     top_5_frequency['customer_short'] = top_5_frequency['customer_id'].str[:8]
     top_5_monetary['customer_short'] = top_5_monetary['customer_id'].str[:8]
     
-    fig, ax = plt.subplots(nrows=1, ncols=3, figsize=(20, 5))
-    
-    # 1. Grafik Recency
-    sns.barplot(y="recency", x="customer_short", data=top_5_recency, palette="BuGn_r", ax=ax[0])
