@@ -20,13 +20,11 @@ sns.set_theme(style="darkgrid")
 # ==============================================================================
 @st.cache_data
 def load_split_data():
-    base_url = https://githubusercontent.com
-  
-    # REVISI: Menggunakan format penamaan nama file yang benar sesuai hasil unduhan DataMani
-    df1 = pd.read_csv(f"{base_url}main_data_part1.csv")
-    df2 = pd.read_csv(f"{base_url}main_data_part2.csv")
-    df3 = pd.read_csv(f"{base_url}main_data_part3.csv")
-    df4 = pd.read_csv(f"{base_url}main_data_part4.csv")
+    # MEMBACA LANGSUNG DARI REPOSITORI LOKAL TANPA LINK INTERNET
+    df1 = pd.read_csv("main_data_part1.csv")
+    df2 = pd.read_csv("main_data_part2.csv")
+    df3 = pd.read_csv("main_data_part3.csv")
+    df4 = pd.read_csv("main_data_part4.csv")
     
     df = pd.concat([df1, df2, df3, df4], ignore_index=True)
     
