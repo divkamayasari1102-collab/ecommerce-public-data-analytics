@@ -20,8 +20,8 @@ sns.set_theme(style="darkgrid")
 # ==============================================================================
 @st.cache_data
 def load_split_data():
-    base_url = "https://githubusercontent.com"
-    
+    base_url = https://githubusercontent.com
+  
     # REVISI: Menggunakan format penamaan nama file yang benar sesuai hasil unduhan DataMani
     df1 = pd.read_csv(f"{base_url}main_data_part1.csv")
     df2 = pd.read_csv(f"{base_url}main_data_part2.csv")
