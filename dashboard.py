@@ -204,9 +204,9 @@ with tab5:
     else:
         st.info("Informasi instrumen pembayaran membutuhkan kolom 'payment_type' dalam dataset Anda.")
 
-# ------------------------------------------------------------------------------
-# TAB 6: SEGMENTASI PELANGGAN (RFM)
-# ------------------------------------------------------------------------------
+# ==============================================================================
+# TAB 6: SEGMENTASI PELANGGAN (RFM) - REVISI GRAFIK AKTIF
+# ==============================================================================
 with tab6:
     st.subheader("Identifikasi Pelanggan Terbaik via Metode Analisis RFM")
     
@@ -228,3 +228,25 @@ with tab6:
     top_5_frequency['customer_short'] = top_5_frequency['customer_id'].str[:8]
     top_5_monetary['customer_short'] = top_5_monetary['customer_id'].str[:8]
     
+    # Perbaikan penting: Menyediakan subplots 3 kolom (ax[0], ax[1], ax[2])
+    fig, ax = plt.subplots(nrows=1, ncols=3, figsize=(20, 5))
+    
+    # 1. Grafik Recency (Kolom ke-1)
+    sns.barplot(y="recency", x="customer_short", data=top_5_recency, palette="BuGn_r", ax=ax[0])
+    ax[0].set_title("Top 5 Customers by Recency (Days)", fontsize=11, fontweight="bold")
+    ax[0].set_xlabel("Customer ID (Short)")
+    ax[0].tick_params(axis='x', rotation=30)
+    
+    # 2. Grafik Frequency (Kolom ke-2)
+    sns.barplot(y="frequency", x="customer_short", data=top_5_frequency, palette="Oranges_r", ax=ax[1])
+    ax[1].set_title("Top 5 Customers by Frequency", fontsize=11, fontweight="bold")
+    ax[1].set_xlabel("Customer ID (Short)")
+    ax[1].tick_params(axis='x', rotation=30)
+    
+    # 3. Grafik Monetary (Kolom ke-3)
+    sns.barplot(y="monetary", x="customer_short", data=top_5_monetary, palette="Blues_r", ax=ax[2])
+    ax[2].set_title("Top 5 Customers by Monetary", fontsize=11, fontweight="bold")
+    ax[2].set_xlabel("Customer ID (Short)")
+    ax[2].tick_params(axis='x', rotation=30)
+    
+    st.pyplot(fig)
