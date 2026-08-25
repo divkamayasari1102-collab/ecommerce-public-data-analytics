@@ -22,16 +22,14 @@ sns.set_theme(style="darkgrid")
 def load_split_data():
     base_url = "https://githubusercontent.com"
     
-    # Membaca keempat bagian file csv teks mentah langsung dari GitHub
+    # REVISI: Menggunakan format penamaan nama file yang benar sesuai hasil unduhan DataMani
     df1 = pd.read_csv(f"{base_url}main_data_part1.csv")
     df2 = pd.read_csv(f"{base_url}main_data_part2.csv")
     df3 = pd.read_csv(f"{base_url}main_data_part3.csv")
     df4 = pd.read_csv(f"{base_url}main_data_part4.csv")
     
-    # Menggabungkan kembali keempat bagian menjadi satu DataFrame utuh
     df = pd.concat([df1, df2, df3, df4], ignore_index=True)
     
-    # Preprocessing Tanggal bawaan kode Anda
     df['order_purchase_timestamp'] = pd.to_datetime(df['order_purchase_timestamp'])
     df['order_month'] = df['order_purchase_timestamp'].dt.to_period('M')
     return df
