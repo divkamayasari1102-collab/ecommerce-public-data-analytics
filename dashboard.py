@@ -3,8 +3,6 @@ import pandas as pd
 import datetime as dt
 import matplotlib.pyplot as plt
 import seaborn as sns
-import gdown
-import os
 
 # ==============================================================================
 # 1. KONFIGURASI HALAMAN & TEMA
@@ -18,30 +16,26 @@ st.set_page_config(
 sns.set_theme(style="darkgrid")
 
 # ==============================================================================
-# 2. DOWNLOAD & CACHING DATA FROM GOOGLE DRIVE
+# 2. MEMBACA DATA LANGSUNG DARI FILE ZIP DI GITHUB
 # ==============================================================================
-GOOGLE_DRIVE_FILE_ID = "1evo6EmgRhy90xHSuTYSOpvB3uZbf-9S5"
-
 @st.cache_data
-def load_data_from_drive(file_id):
-    url = f'https://google.com{file_id}'
-    output = 'cached_data.csv'
+def load_data_from_zip():
+    # GANTI LINK DI BAWAH INI dengan Link Raw/Download ZIP dari GitHub Anda sendiri
+    zip_url = "https://github.com"
     
-    if not os.path.exists(output):
-        with st.spinner("Sedang mengunduh dataset dari Google Drive... Mohon tunggu sebentar."):
-            gdown.download(url, output, quiet=True)
-            
-    df = pd.read_csv(output)
+    # Pandas mendeteksi kompresi ZIP otomatis dan mencari file CSV di dalamnya
+    df = pd.read_csv(zip_url, compression='zip')
     
+    # Preprocessing Tanggal
     df['order_purchase_timestamp'] = pd.to_datetime(df['order_purchase_timestamp'])
     df['order_month'] = df['order_purchase_timestamp'].dt.to_period('M')
     return df
 
 try:
-    main_df = load_data_from_drive(GOOGLE_DRIVE_FILE_ID)
+    with st.spinner("Sedang memuat data dari GitHub... Mohon tunggu sebentar."):
+        main_df = load_data_from_zip()
 except Exception as e:
-    st.error(f"Gagal mengunduh data dari Google Drive: {e}")
-    st.markdown("Pastikan setelan file di Google Drive Anda sudah diatur ke **'Anyone with the link'** sebagai Viewer.")
+    st.error(f"Gagal membaca file ZIP dari GitHub: {e}")
     st.stop()
 
 # ==============================================================================
@@ -56,7 +50,7 @@ with st.sidebar:
     start_date, end_date = st.date_input(
         label='Pilih Rentang Waktu Transaksi:',
         min_value=min_date,
-        max_date=max_date,
+        max_value=max_date,
         value=[min_date, max_date]
     )
 
@@ -107,13 +101,13 @@ with tab1:
     
     fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(18, 5))
     
-    sns.lineplot(x="order_month_str", y="order_id", data=monthly_data, marker="o", color="#2A9D8F", linewidth=3, ax=ax[0])
-    ax[0].set_title("Tren Volume Penjualan (Orders)", fontsize=12, fontweight="bold")
-    ax[0].tick_params(axis='x', rotation=45)
+    sns.lineplot(x="order_month_str", y="order_id", data=monthly_data, marker="o", color="#2A9D8F", linewidth=3, ax=ax)
+    ax.set_title("Tren Volume Penjualan (Orders)", fontsize=12, fontweight="bold")
+    ax.tick_params(axis='x', rotation=45)
     
-    sns.lineplot(x="order_month_str", y="price", data=monthly_data, marker="o", color="#E76F51", linewidth=3, ax=ax[1])
-    ax[1].set_title("Tren Akumulasi Pendapatan (Revenue)", fontsize=12, fontweight="bold")
-    ax[1].tick_params(axis='x', rotation=45)
+    sns.lineplot(x="order_month_str", y="price", data=monthly_data, marker="o", color="#E76F51", linewidth=3, ax=ax)
+    ax.set_title("Tren Akumulasi Pendapatan (Revenue)", fontsize=12, fontweight="bold")
+    ax.tick_params(axis='x', rotation=45)
     
     st.pyplot(fig)
 
@@ -134,11 +128,11 @@ with tab2:
     
     fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(18, 5))
     
-    sns.barplot(x='order_item_id', y=prod_col, data=top_5, palette='viridis', ax=ax[0])
-    ax[0].set_title("Top 5 Kategori Produk Tertinggi", fontsize=12, fontweight="bold")
+    sns.barplot(x='order_item_id', y=prod_col, data=top_5, palette='viridis', ax=ax)
+    ax.set_title("Top 5 Kategori Produk Tertinggi", fontsize=12, fontweight="bold")
     
-    sns.barplot(x='order_item_id', y=prod_col, data=bottom_5, palette='rocket', ax=ax[1])
-    ax[1].set_title("Bottom 5 Kategori Produk Terendah", fontsize=12, fontweight="bold")
+    sns.barplot(x='order_item_id', y=prod_col, data=bottom_5, palette='rocket', ax=ax)
+    ax.set_title("Bottom 5 Kategori Produk Terendah", fontsize=12, fontweight="bold")
     
     st.pyplot(fig)
 
@@ -229,6 +223,10 @@ with tab6:
     fig, ax = plt.subplots(nrows=1, ncols=3, figsize=(20, 5))
     
     # 1. Grafik Recency
-    sns.barplot(y="recency", x="customer_short", data=top_5_recency, palette="BuGn_r", ax=ax[0])
-    ax[0].set_title("Top 5 Customers by Recency (Days)", fontsize=11, fontweight="bold")
-    ax[0].set_xlabel("Customer ID (Short)")
+    sns.barplot(y="recency", x="customer_short", data=top_5_recency, palette="BuGn_r", ax=ax)
+    ax.set_title("Top 5 Customers by Recency (Days)", fontsize=11, fontweight="bold")
+    ax.set_xlabel("Customer ID (Short)")
+    ax.tick_params(axis='x', rotation=30)
+    
+    # 2. Grafik Frequency
+    sns.barplot(y="frequency", x="customer_short", data=top_5_frequency, palette="Oranges_r", ax=ax)
